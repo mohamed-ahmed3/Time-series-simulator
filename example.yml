@@ -1,0 +1,25 @@
+start_date: 2015-12-30
+frequencies: 
+- "1D"
+- "10T"
+daily_seasonality_options: 
+- "no"
+- "exist"
+weekly_seasonality_options:
+- "exist"
+- "no"
+noise_levels: 
+- "small"  # , "large"]
+trend_levels: 
+- "exist"
+- "no"
+cyclic_periods: 
+- "exist"
+- "no"
+data_types: 
+- "additive"
+percentage_outliers_options:
+- 0.05
+data_sizes:
+- 60
+- 90

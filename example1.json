@@ -1,0 +1,40 @@
+{
+  "start_date": "2015-12-11",
+  "frequencies": [
+    "1D",
+    "10T",
+    "30T",
+    "1H", 
+    "6H", 
+    "8H"
+  ],
+  "daily_seasonality_options": [
+    "no",
+    "exist"
+  ],
+  "weekly_seasonality_options": [
+    "exist",
+    "no"
+  ],
+  "noise_levels": [
+    "small"
+  ],
+  "trend_levels": [
+    "exist",
+    "no"
+  ],
+  "cyclic_periods": [
+    "exist",
+    "no"
+  ],
+  "data_types": [
+    "additive"
+  ],
+  "percentage_outliers_options": [
+    0.05
+  ],
+  "data_sizes": [
+    60,
+    90
+  ]
+}

@@ -9,7 +9,7 @@ class ConfigurationManager(ABC):
     Abstract class to make the configuration manager extensible
     methods:
         --init--
-        create
+        create: created the instance
         read: abstract method
         property methods to get the data
     """

@@ -2,6 +2,10 @@ start_date: 2015-12-30
 frequencies: 
 - "1D"
 - "10T"
+- "30T"
+- "1H"
+- "6H"
+- "8H"
 daily_seasonality_options: 
 - "no"
 - "exist"

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 import yaml
+import json
+from datetime import datetime
 
 
 class ConfigurationManager(ABC):
@@ -11,13 +13,17 @@ class ConfigurationManager(ABC):
     def create(cls, source: str):
         if source.endswith('.yml'):
             return YamlConfigurationManager(source)
+
+        elif source.endswith('.json'):
+            return JsonConfigurationManager(source)
+        
         else:
             raise Exception(f"Unsupported source: {source}")
 
     @abstractmethod
     def read(self):
         pass
-    
+
     @property
     def start_date(self):
         return self.configs['start_date']
@@ -25,7 +31,7 @@ class ConfigurationManager(ABC):
     @property
     def frequencies(self):
         return self.configs['frequencies']
-    
+
     @property
     def daily_seasonality_options(self):
         return self.configs['daily_seasonality_options']
@@ -66,9 +72,15 @@ class YamlConfigurationManager(ConfigurationManager):
 
         return data
 
-    
 
+class JsonConfigurationManager(ConfigurationManager):
+    def read(self):
+        jsonfile = open(self.source, 'r')
+        jsondata = jsonfile.read()
+        data = json.loads(jsondata)
 
-
-
-
+        date_str = data['start_date']
+        date_format = '%Y-%m-%d'
+        date_obj = datetime.strptime(date_str, date_format)
+        data['start_date'] = date_obj
+        return data

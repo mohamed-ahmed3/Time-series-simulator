@@ -6,6 +6,7 @@ from data_producer import DataProducer
 
 random.seed(22)
 
+
 def main():
     configuration_manager = ConfigurationManager.create("example.yml")
     data_simulator = DataSimulator(configuration_manager)

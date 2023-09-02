@@ -13,7 +13,8 @@ weekly_seasonality_options:
 - "exist"
 - "no"
 noise_levels: 
-- "small"  # , "large"]
+- "small"
+- "large"
 trend_levels: 
 - "exist"
 - "no"
@@ -22,6 +23,7 @@ cyclic_periods:
 - "no"
 data_types: 
 - "additive"
+- "multiplicative"
 percentage_outliers_options:
 - 0.05
 data_sizes:

@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import pandas as pd
 import os
 
+
 class DataProducer(ABC):
     def __init__(self, sink: str):
         self.sink = sink
@@ -16,19 +17,10 @@ class DataProducer(ABC):
     @abstractmethod
     def produce(self, data: dict):
         pass
-    
-    @abstractmethod
-    def produce_from_records(self, data: list):
-        pass
-    
+
 
 class CsvDataProducer(DataProducer):
     def produce(self, data: dict):
         data_df = pd.DataFrame(data)
-        os.makedirs(os.path.dirname(self.sink), exist_ok=True)
-        data_df.to_csv(self.sink, encoding='utf-8', index=False)
-
-    def produce_from_records(self, data: list):
-        data_df = pd.DataFrame.from_records(data)
         os.makedirs(os.path.dirname(self.sink), exist_ok=True)
         data_df.to_csv(self.sink, encoding='utf-8', index=False)

@@ -17,7 +17,8 @@
     "no"
   ],
   "noise_levels": [
-    "small"
+    "small",
+    "large"
   ],
   "trend_levels": [
     "exist",
@@ -28,7 +29,8 @@
     "no"
   ],
   "data_types": [
-    "additive"
+    "additive",
+    "multiplicative"
   ],
   "percentage_outliers_options": [
     0.05

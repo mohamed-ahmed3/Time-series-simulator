@@ -142,7 +142,7 @@ class DataSimulator:
 
         Parameters:
             data (DatetimeIndex): The time index for the data.
-            trend (str): The magnitude of the trend ('No Trend', 'Small Trend', 'Large Trend').
+            trend (str): The magnitude of the trend ('No Trend', 'exist').
 
         Returns:
             numpy.ndarray: The trend component of the time series.

@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from typing import List
+
 import yaml
 import json
 from datetime import datetime
@@ -13,7 +15,7 @@ class ConfigurationManager(ABC):
         read: abstract method
         property methods to get the data
     """
-      
+
     def __init__(self, source: str):
         """
         Initialize the object with the source
@@ -38,7 +40,7 @@ class ConfigurationManager(ABC):
 
         elif source.endswith('.json'):
             return JsonConfigurationManager(source)
-        
+
         else:
             raise Exception(f"Unsupported source: {source}")
 
@@ -154,6 +156,7 @@ class YamlConfigurationManager(ConfigurationManager):
     methods:
         read
     """
+
     def read(self):
         """
         read yaml file
@@ -175,13 +178,13 @@ class JsonConfigurationManager(ConfigurationManager):
         return:
             data
         """
-        jsonfile = open(self.source, 'r')
-        jsondata = jsonfile.read()
-        data = json.loads(jsondata)
+        with open(self.source) as f:
+            jsondata = f.read()
+            data = json.loads(jsondata)
 
-        date_str = data['start_date']
-        date_format = '%Y-%m-%d'
-        date_obj = datetime.strptime(date_str, date_format)
-        data['start_date'] = date_obj
+            date_str = data['start_date']
+            date_format = '%Y-%m-%d'
+            date_obj = datetime.strptime(date_str, date_format)
+            data['start_date'] = date_obj
 
         return data

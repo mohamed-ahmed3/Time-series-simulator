@@ -105,9 +105,11 @@ class DataSimulator:
         Parameters:
             data (DatetimeIndex): The time index for the data.
             seasonality (str): The type of seasonality ('Long', 'Short', or 'Intermediate').
+            season_type
 
         Returns:
             numpy.ndarray: The seasonal component of the time series.
+
         """
         if seasonality == "exist":  # Weekly Seasonality
             seasonal_component = np.sin(2 * np.pi * data.dayofweek / 7)

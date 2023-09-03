@@ -8,17 +8,17 @@ from datetime import datetime
 
 class ConfigurationManager(ABC):
     """
-    Abstract class to make the configuration manager extensible
+    An abstract class that provides a configuration manager framework.
     methods:
-        --init--
-        create: created the instance
-        read: abstract method
-        property methods to get the data
+        __init__: Initializes the configuration manager instance.
+        create: Factory method to create an instance of a specific configuration manager.
+        read: Abstract method for reading configuration data from a source.
+
     """
 
     def __init__(self, source: str):
         """
-        Initialize the object with the source
+        Initializes the configuration manager instance.
 
         Parameters:
             source: The source of the data. Can be yaml file or json file

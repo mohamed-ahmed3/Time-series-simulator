@@ -10,6 +10,25 @@ from configuration_manager import ConfigurationManager
 
 class DataSimulator:
     def __init__(self, configuration_manager: ConfigurationManager):
+        """
+        This class initializes its attributes based on the provided ConfigurationManager.
+
+        Parameters:
+                configuration_manager (ConfigurationManager): An instance of ConfigurationManager
+                that holds various configuration parameters.
+
+        Attributes:
+            start_date (datetime.datetime): The start date for data generation.
+            Frequencies (List[str]): A list of frequency strings.
+            daily_seasonality_options (List[...]): A list of daily seasonality options.
+            weekly_seasonality_options (List[...]): A list of weekly seasonality options.
+            noise_levels (List[...]): A list of noise levels.
+            trend_levels (List[...]): A list of trend levels.
+            cyclic_periods (List[...]): A list of cyclic periods.
+            data_types (List[str]): A list of data types.
+            percentage_outliers_options (List[...]): A list of percentage outliers options.
+            data_sizes (List[...]): A list of data sizes.
+        """
         self.start_date = configuration_manager.start_date
         self.frequencies = configuration_manager.frequencies
         self.daily_seasonality_options = configuration_manager.daily_seasonality_options
@@ -22,6 +41,20 @@ class DataSimulator:
         self.data_sizes = configuration_manager.data_sizes
 
     def generate(self):
+        """
+        Generate time series data with various configurations and yield data points.
+        This generator function creates time series data with multiple combinations of
+        configuration parameters, including daily and weekly seasonality, noise levels,
+        trends, cyclic patterns, data types, and more. It yields data points in the form
+        of dictionaries containing 'value', 'timestamp', and 'anomaly' information.
+        Yields:
+            A tuple containing two dictionaries:
+            - The first dictionary includes 'value' (time series data), 'timestamp' (time index),
+                and 'anomaly' (outlier information).
+            - The second dictionary includes metadata such as 'id', 'data_type', 'daily_seasonality',
+                'weekly_seasonality', 'noise (high 30% - low 10%)', 'trend', 'cyclic_period (3 months)',
+                'data_size', 'percentage_outliers', 'percentage_missing', and 'freq'.
+        """
         counter = 0
         # for freq in frequencies:
         for daily_seasonality in self.daily_seasonality_options:

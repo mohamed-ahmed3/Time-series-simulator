@@ -1,6 +1,6 @@
 import random
 
-from configuration_manager import ConfigurationManager, ConfigurationManagerCreator
+from configuration_manager import ConfigurationManagerCreator
 from data_simulator import DataSimulator
 from data_producer import DataProducer
 

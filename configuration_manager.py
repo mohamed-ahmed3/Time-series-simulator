@@ -6,6 +6,35 @@ import json
 from datetime import datetime
 
 
+class ConfigurationManagerCreator:
+    def __init__(self, source: str):
+        """
+        Initializes the configuration manager instance.
+
+        Parameters:
+            source: The source of the data. Can be yaml file or json file
+        """
+        self.source = source
+
+    @classmethod
+    def create(cls, source: str):
+        """
+        Creates an instance from the chosen source.
+
+        Parameters:
+            source: The source of the data. Can be yaml file or json file
+
+        """
+        if source.endswith('.yml'):
+            return YamlConfigurationManager(source)
+
+        elif source.endswith('.json'):
+            return JsonConfigurationManager(source)
+
+        else:
+            raise Exception(f"Unsupported source: {source}")
+
+
 class ConfigurationManager(ABC):
     """
     An abstract class that provides a configuration manager framework.
@@ -25,24 +54,6 @@ class ConfigurationManager(ABC):
         """
         self.source = source
         self.configs = self.read()
-
-    @classmethod
-    def create(cls, source: str):
-        """
-        Creates an instance from the chosen source.
-
-        Parameters:
-            source: The source of the data. Can be yaml file or json file
-        
-        """
-        if source.endswith('.yml'):
-            return YamlConfigurationManager(source)
-
-        elif source.endswith('.json'):
-            return JsonConfigurationManager(source)
-
-        else:
-            raise Exception(f"Unsupported source: {source}")
 
     @abstractmethod
     def read(self):

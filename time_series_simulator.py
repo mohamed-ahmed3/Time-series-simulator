@@ -1,6 +1,6 @@
 import random
 
-from configuration_manager import ConfigurationManager
+from configuration_manager import ConfigurationManager, ConfigurationManagerCreator
 from data_simulator import DataSimulator
 from data_producer import DataProducer
 
@@ -8,7 +8,7 @@ random.seed(22)
 
 
 def main():
-    configuration_manager = ConfigurationManager.create("example.yml")
+    configuration_manager = ConfigurationManagerCreator.create("example.yml")
     data_simulator = DataSimulator(configuration_manager)
     meta_data_producer = DataProducer.create('sample_datasets/meta_data.csv')
 

@@ -4,11 +4,14 @@ import numpy as np
 import pandas as pd
 from datetime import timedelta
 
+from abc import ABC, abstractmethod
+
+from itertools import product
 
 from configuration_manager import ConfigurationManager
 
 
-class DataSimulator:
+class DataGenerator:
     def __init__(self, configuration_manager: ConfigurationManager):
         """
         This class initializes its attributes based on the provided ConfigurationManager.
@@ -55,65 +58,71 @@ class DataSimulator:
                 'weekly_seasonality', 'noise (high 30% - low 10%)', 'trend', 'cyclic_period (3 months)',
                 'data_size', 'percentage_outliers', 'percentage_missing', and 'freq'.
         """
+
+        config_params = [
+            self.daily_seasonality_options,
+            self.weekly_seasonality_options,
+            self.noise_levels,
+            self.trend_levels,
+            self.cyclic_periods,
+            self.percentage_outliers_options,
+            self.data_types,
+        ]
+
         counter = 0
-        # for freq in frequencies:
-        for daily_seasonality in self.daily_seasonality_options:
-            for weekly_seasonality in self.weekly_seasonality_options:
-                for noise_level in self.noise_levels:
-                    for trend in self.trend_levels:
-                        for cyclic_period in self.cyclic_periods:
-                            for percentage_outliers in self.percentage_outliers_options:
-                                for data_type in self.data_types:
-                                    for _ in range(16):
-                                        # for data_size in data_sizes:
-                                        data_size = random.choice(self.data_sizes)
-                                        freq = random.choice(self.frequencies)
-                                        counter += 1
-                                        file_name = f"TimeSeries_daily_{daily_seasonality}_weekly_{weekly_seasonality}_noise_{noise_level}_trend_{trend}_cycle_{cyclic_period}_outliers_{int(percentage_outliers * 100)}%_freq_{freq}_size_{data_size}Days.csv"
-                                        print(f"File '{file_name}' generated.")
-                                        # Generate time index
-                                        date_rng = self.generate_time_series(self.start_date,
-                                                                             self.start_date + timedelta(
-                                                                                 days=data_size),
-                                                                             freq)
-                                        # Create components
-                                        daily_seasonal_component = self.add_daily_seasonality(date_rng,
-                                                                                              daily_seasonality,
-                                                                                              season_type=data_type)
-                                        weekly_seasonal_component = self.add_weekly_seasonality(date_rng,
-                                                                                                weekly_seasonality,
-                                                                                                season_type=data_type)
-                                        trend_component = self.add_trend(date_rng, trend, data_size=data_size,
-                                                                         data_type=data_type)
-                                        cyclic_period = "exist"
-                                        cyclic_component = self.add_cycles(date_rng, cyclic_period,
-                                                                           season_type=data_type)
+        #used the itertools.product to make all the combinations without the need of nested for loops
+        for configs in product(*config_params):
+            daily_seasonality, weekly_seasonality, noise_level, trend, cyclic_period, percentage_outliers, data_type = configs
 
-                                        # Combine components and add missing values and outliers
-                                        if data_type == 'multiplicative':
-                                            data = daily_seasonal_component * weekly_seasonal_component * trend_component * cyclic_component
-                                        else:
-                                            data = daily_seasonal_component + weekly_seasonal_component + trend_component + cyclic_component
-                                        # Create a MinMaxScaler instance
-                                        scaler = MinMaxScaler(feature_range=(-1, 1))
-                                        data = scaler.fit_transform(data.values.reshape(-1, 1))
-                                        data = self.add_noise(data, noise_level)
-                                        data, anomaly = self.add_outliers(data, percentage_outliers)
-                                        data = self.add_missing_values(data, 0.05)
+            for _ in range(16):
+                data_size = random.choice(self.data_sizes)
+                freq = random.choice(self.frequencies)
+                counter += 1
+                file_name = f"TimeSeries_daily_{daily_seasonality}_weekly_{weekly_seasonality}_noise_{noise_level}_trend_{trend}_cycle_{cyclic_period}_outliers_{int(percentage_outliers * 100)}%_freq_{freq}_size_{data_size}Days.csv"
+                print(f"File '{file_name}' generated.")
 
-                                        yield ({'value': data, 'timestamp': date_rng, 'anomaly': anomaly},
-                                               {'id': str(counter) + '.csv',
-                                                'data_type': data_type,
-                                                'daily_seasonality': daily_seasonality,
-                                                'weekly_seasonality': weekly_seasonality,
-                                                'noise (high 30% - low 10%)': noise_level,
-                                                'trend': trend,
-                                                'cyclic_period (3 months)': cyclic_period,
-                                                'data_size': data_size,
-                                                'percentage_outliers': percentage_outliers,
-                                                'percentage_missing': 0.05,
-                                                'freq': freq})
+                date_rng = TimeSeriesGenerator.generate_time_series(self.start_date,
+                                                                    self.start_date + timedelta(days=data_size),
+                                                                    freq)
 
+                daily_seasonality_instance = DailySeasonality()
+                daily_seasonal_component = daily_seasonality_instance.add_seasonality(date_rng, daily_seasonality,
+                                                                                      season_type=data_type)
+
+                weekly_seasonality_instance = WeeklySeasonality()
+                weekly_seasonal_component = weekly_seasonality_instance.add_seasonality(date_rng, weekly_seasonality,
+                                                                                        season_type=data_type)
+
+                trend_component = Trend.add_trend(date_rng, trend, data_size=data_size, data_type=data_type)
+                cyclic_period = "exist"
+                cyclic_component = Cycles.add_cycles(date_rng, cyclic_period, season_type=data_type)
+
+                if data_type == 'multiplicative':
+                    data = daily_seasonal_component * weekly_seasonal_component * trend_component * cyclic_component
+                else:
+                    data = daily_seasonal_component + weekly_seasonal_component + trend_component + cyclic_component
+
+                scaler = MinMaxScaler(feature_range=(-1, 1))
+                data = scaler.fit_transform(data.values.reshape(-1, 1))
+                data = Noise.add_noise(data, noise_level)
+                data, anomaly = Outliers.add_outliers(data, percentage_outliers)
+                data = MissingValues.add_missing_values(data, 0.05)
+
+                yield ({'value': data, 'timestamp': date_rng, 'anomaly': anomaly},
+                       {'id': str(counter) + '.csv',
+                        'data_type': data_type,
+                        'daily_seasonality': daily_seasonality,
+                        'weekly_seasonality': weekly_seasonality,
+                        'noise (high 30% - low 10%)': noise_level,
+                        'trend': trend,
+                        'cyclic_period (3 months)': cyclic_period,
+                        'data_size': data_size,
+                        'percentage_outliers': percentage_outliers,
+                        'percentage_missing': 0.05,
+                        'freq': freq})
+
+
+class TimeSeriesGenerator:
     @staticmethod
     def generate_time_series(start_date, end_date, freq):
         """
@@ -130,8 +139,22 @@ class DataSimulator:
         date_rng = pd.date_range(start=start_date, end=end_date, freq=freq)
         return date_rng
 
-    @staticmethod
-    def add_weekly_seasonality(data, seasonality, season_type):
+
+class Seasonality(ABC):
+    """
+    Abstract class to add seasonality
+
+    methods:
+        add_seasonality: abstract method
+    """
+    @abstractmethod
+    def add_seasonality(cls, data, seasonality, season_type):
+        pass
+
+
+class WeeklySeasonality(Seasonality):
+
+    def add_seasonality(cls, data, seasonality, season_type):
         """
         Add weekly seasonality component to the time series data.
 
@@ -151,10 +174,12 @@ class DataSimulator:
             seasonal_component = np.zeros(len(data)) if season_type == 'additive' else np.ones(len(data))
         return pd.Series(seasonal_component)
 
-    @staticmethod
-    def add_daily_seasonality(data, seasonality, season_type):
+
+class DailySeasonality(Seasonality):
+
+    def add_seasonality(cls, data, seasonality, season_type):
         """
-        Add seasonality component to the time series data.
+        Add daily seasonality component to the time series data.
 
         Parameters:
             data (DatetimeIndex): The time index for the data.
@@ -170,6 +195,8 @@ class DataSimulator:
             seasonal_component = np.zeros(len(data)) if season_type == 'additive' else np.ones(len(data))
         return pd.Series(seasonal_component)
 
+
+class Trend:
     @staticmethod
     def add_trend(data, trend, data_size, data_type):
         """
@@ -191,6 +218,8 @@ class DataSimulator:
 
         return pd.Series(trend_component)
 
+
+class Cycles:
     @staticmethod
     def add_cycles(data, cyclic_periods, season_type):
         """
@@ -211,6 +240,8 @@ class DataSimulator:
 
         return cycle_component
 
+
+class MissingValues:
     @staticmethod
     def add_missing_values(data, percentage_missing=0.05):
         """
@@ -231,6 +262,8 @@ class DataSimulator:
 
         return data_with_missing
 
+
+class Noise:
     @staticmethod
     def add_noise(data, noise_level):
         """
@@ -257,6 +290,8 @@ class DataSimulator:
             noise[i] = np.random.normal(0, abs(data[i]) * noise_level) if noise_level > 0 else 0
         return pd.Series((data + noise)[:, 0])
 
+
+class Outliers:
     @staticmethod
     def add_outliers(data, percentage_outliers=0.05):
         """

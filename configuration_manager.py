@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+import sqlite3
 
 import yaml
 import json
@@ -30,6 +30,9 @@ class ConfigurationManagerCreator:
 
         elif source.endswith('.json'):
             return JsonConfigurationManager(source)
+
+        elif source.endswith('.sqlite'):
+            return DatabaseReader(source)
 
         else:
             raise Exception(f"Unsupported source: {source}")
@@ -197,5 +200,23 @@ class JsonConfigurationManager(ConfigurationManager):
             date_format = '%Y-%m-%d'
             date_obj = datetime.strptime(date_str, date_format)
             data['start_date'] = date_obj
+
+        return data
+
+
+class DatabaseReader(ConfigurationManager):
+    def __int__(self, table_name):
+        self.table_name = table_name
+
+    def read(self):
+        conn = sqlite3.connect(self.source)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM " + self.table_name)
+
+        data = dict(cursor.fetchall())
+
+        cursor.close()
+        conn.close()
 
         return data

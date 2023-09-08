@@ -3,21 +3,7 @@ import pandas as pd
 import os
 
 
-class DataProducer(ABC):
-    """
-    An abstract base class for data producers.
-
-    Attributes:
-        sink (str): The destination where data will be produced.
-    """
-    def __init__(self, sink: str):
-        """
-        Initialize a DataProducer instance.
-
-        Parameters:
-            sink (str): The destination where data will be produced.
-        """
-        self.sink = sink
+class DataProducerFileCreation:
 
     @classmethod
     def create(cls, sink: str):
@@ -37,6 +23,24 @@ class DataProducer(ABC):
             return CsvDataProducer(sink)
         else:
             raise ValueError(f"Unsupported sink: {sink}")
+
+
+class DataProducer(ABC):
+    """
+    An abstract base class for data producers.
+
+    Attributes:
+        sink (str): The destination where data will be produced.
+    """
+
+    def __init__(self, sink: str):
+        """
+        Initialize a DataProducer instance.
+
+        Parameters:
+            sink (str): The destination where data will be produced.
+        """
+        self.sink = sink
 
     @abstractmethod
     def produce(self, data: dict):

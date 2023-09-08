@@ -4,11 +4,12 @@ import random
 from unittest.mock import MagicMock
 import pandas as pd
 
-from data_simulator import DataSimulator
-from configuration_manager import ConfigurationManager
+from data_simulator import DataGenerator,TimeSeriesGenerator, WeeklySeasonality, DailySeasonality
+
+from configuration_manager import ConfigurationManagerCreator
 
 
-class TestDataSimulator(unittest.TestCase):
+class TestDataGenerator(unittest.TestCase):
     """
     Unit tests for the DataSimulator class.
 
@@ -35,8 +36,8 @@ class TestDataSimulator(unittest.TestCase):
 
         self.freq = random.choice(self.frequencies)
 
-        self.configuration_mock = MagicMock(spec=ConfigurationManager)
-        self.data_simulator_instance = DataSimulator(self.configuration_mock)
+        self.configuration_mock = MagicMock(spec=ConfigurationManagerCreator)
+        self.data_simulator_instance = DataGenerator(self.configuration_mock)
 
     def test_generate(self):
         """
@@ -46,33 +47,45 @@ class TestDataSimulator(unittest.TestCase):
         for i in data_generator:
             self.assertIsInstance(i, tuple)
 
+class TestGenerateTimeSeries(unittest.TestCase, TestDataGenerator):
+    def setup(self) -> None:
+        self.time_generator = TimeSeriesGenerator()
+
     def test_generate_time_series(self):
         """
         Test the generation of a time series (DatetimeIndex).
         """
-        date = self.data_simulator_instance.generate_time_series(self.start_date, self.end_date, "M")
+        date = self.time_generator.generate_time_series(self.start_date, self.end_date, "M")
         self.assertIsInstance(date, pd.DatetimeIndex)
 
+class TestWeeklySeasonality(unittest.TestCase, TestDataGenerator):
+
+    def setUp(self) -> None:
+        self.weekly_seasonality_instance = WeeklySeasonality()
     def test_add_weekly_seasonality(self):
         """
         Test the addition of weekly seasonality to a time series.
         """
-        date = self.data_simulator_instance.generate_time_series(self.start_date, self.end_date, self.freq)
-        weekly_seasonality = self.data_simulator_instance.add_weekly_seasonality(date, self.weekly_seasonality_options,
+        date = TimeSeriesGenerator.generate_time_series(self.start_date, self.end_date, self.freq)
+        weekly_seasonality = self.weekly_seasonality_instance.add_seasonality(date, self.weekly_seasonality_options,
                                                                                  self.data_types)
 
         self.assertIsInstance(weekly_seasonality, pd.Series)
 
-    def test_add_daily_seasonality(self):
-        """
-        Test the addition of daily seasonality to a time series.
-        """
-        date = self.data_simulator_instance.generate_time_series(self.start_date, self.end_date, self.freq)
-        weekly_seasonality = self.data_simulator_instance.add_weekly_seasonality(date, self.daily_seasonality_options,
-                                                                                 self.data_types)
+    class TestDailySeasonality(unittest.TestCase, TestDataGenerator):
 
-        self.assertIsInstance(weekly_seasonality, pd.Series)
+        def setUp(self) -> None:
+            self.daily_seasonality_instance = DailySeasonality()
 
+        def test_add_daily_seasonality(self):
+            """
+            Test the addition of weekly seasonality to a time series.
+            """
+            date = TimeSeriesGenerator.generate_time_series(self.start_date, self.end_date, self.freq)
+            daily_seasonality = self.daily_seasonality_instance.add_seasonality(date, self.weekly_seasonality_options,
+                                                                                  self.data_types)
+
+            self.assertIsInstance(daily_seasonality, pd.Series)
 
 if __name__ == '__main__':
     unittest.main()

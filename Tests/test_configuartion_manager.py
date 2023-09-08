@@ -1,4 +1,4 @@
-from configuration_manager import ConfigurationManager, YamlConfigurationManager, JsonConfigurationManager
+from configuration_manager import ConfigurationManagerCreator, YamlConfigurationManager, JsonConfigurationManager
 import unittest
 from unittest.mock import patch
 
@@ -10,7 +10,7 @@ class TestConfigurationManager(unittest.TestCase):
     These tests check the creation of configuration manager instances based on different sources
     (YAML, JSON) and verify that an exception is raised when an unknown source is provided.
     """
-    @patch.multiple(ConfigurationManager, __abstractmethods__=set())
+    @patch.multiple(ConfigurationManagerCreator, __abstractmethods__=set())
     def setUp(self) -> None:
         """
         Set up common test data.
@@ -22,14 +22,14 @@ class TestConfigurationManager(unittest.TestCase):
         """
         Test the successful creation of a YAML configuration manager instance.
         """
-        yaml_instance = ConfigurationManager.create(self.source_yml)
+        yaml_instance = ConfigurationManagerCreator.create(self.source_yml)
         self.assertIsInstance(yaml_instance, YamlConfigurationManager)
 
     def test_create_json(self):
         """
         Test the successful creation of a JSON configuration manager instance.
         """
-        json_instance = ConfigurationManager.create(self.source_json)
+        json_instance = ConfigurationManagerCreator.create(self.source_json)
         self.assertIsInstance(json_instance, JsonConfigurationManager)
 
     def test_create_unknown(self):
@@ -37,7 +37,7 @@ class TestConfigurationManager(unittest.TestCase):
         Test that an exception is raised when an unknown source is provided.
         """
         with self.assertRaises(Exception):
-            ConfigurationManager.create("example.env")
+            ConfigurationManagerCreator.create("example.env")
 
 
 class TestYamlConfigurationManager(unittest.TestCase):
@@ -51,7 +51,7 @@ class TestYamlConfigurationManager(unittest.TestCase):
         """
         Set up the test environment by creating a YamlConfigurationManager instance.
         """
-        self.source_yml = ConfigurationManager.create("example.yml")
+        self.source_yml = ConfigurationManagerCreator.create("example.yml")
 
     def test_read(self):
         """
@@ -81,7 +81,7 @@ class TestJsonConfigurationManager(unittest.TestCase):
         """
         Set up the test environment by creating a JsonConfigurationManager instance.
         """
-        self.source_json = ConfigurationManager.create("example1.json")
+        self.source_json = ConfigurationManagerCreator.create("example1.json")
 
     def test_read(self):
         """

@@ -1,7 +1,8 @@
 import os.path
 import unittest
-from data_producer import DataProducer, CsvDataProducer
+from data_producer import DataProducerFileCreation, CsvDataProducer
 import pandas as pd
+from unittest.mock import patch, mock_open
 
 
 class TestDataProducer(unittest.TestCase):
@@ -21,7 +22,7 @@ class TestDataProducer(unittest.TestCase):
         """
         Test the successful creation of a CsvDataProducer instance.
         """
-        self.data_producer = DataProducer.create(self.sink)
+        self.data_producer = DataProducerFileCreation.create(self.sink)
         self.assertIsInstance(self.data_producer, CsvDataProducer)
 
 
@@ -42,14 +43,20 @@ class TestCsvDataProducer(unittest.TestCase):
                              "test2": [132]
                              }
 
-        self.data_producer = DataProducer.create(self.sink)
+        self.data_producer = DataProducerFileCreation.create(self.sink)
 
-    def test_produce(self):
+    @patch('os.mkdirs')
+    @patch('pandas.DataFrame.to_csv')
+    def test_produce(self, mock_to_csv, mock_mkdirs):
         """
         Test the successful production of a CSV file and validate its content.
         """
         self.data_producer.produce(self.my_test_dict)
-        self.assertTrue(os.path.exists(self.sink))
+
+        mock_mkdirs.assert_called_once_with(os.path.dirname(self.sink), exist_ok=True)
+
+        expected_df = pd.DataFrame(self.my_test_dict)
+        mock_to_csv.assert_called_once_with(self.sink, encodings='utf-8', index = False)
 
         read_data = pd.read_csv(self.sink)
 

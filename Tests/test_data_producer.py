@@ -12,6 +12,7 @@ class TestDataProducer(unittest.TestCase):
     These tests verify the functionality of the DataProducer class, including the successful
     creation of a CsvDataProducer instance based on the provided sink.
     """
+
     def setUp(self) -> None:
         """
         Set up the test environment by defining the 'sink' attribute.
@@ -33,6 +34,7 @@ class TestCsvDataProducer(unittest.TestCase):
     These tests verify the functionality of the CsvDataProducer class, including the successful
     production of a CSV file, checking if the file exists, and validating its content.
     """
+
     def setUp(self) -> None:
         """
         Set up the test environment by defining the 'sink' attribute, creating a sample data dictionary,
@@ -45,7 +47,7 @@ class TestCsvDataProducer(unittest.TestCase):
 
         self.data_producer = DataProducerFileCreation.create(self.sink)
 
-    @patch('os.mkdirs')
+    @patch('os.makedirs')
     @patch('pandas.DataFrame.to_csv')
     def test_produce(self, mock_to_csv, mock_mkdirs):
         """
@@ -55,12 +57,7 @@ class TestCsvDataProducer(unittest.TestCase):
 
         mock_mkdirs.assert_called_once_with(os.path.dirname(self.sink), exist_ok=True)
 
-        expected_df = pd.DataFrame(self.my_test_dict)
-        mock_to_csv.assert_called_once_with(self.sink, encodings='utf-8', index = False)
-
-        read_data = pd.read_csv(self.sink)
-
-        self.assertTrue(read_data.equals(pd.DataFrame(self.my_test_dict)))
+        mock_to_csv.assert_called_once_with(self.sink, encoding='utf-8', index=False)
 
 
 if __name__ == '__main__':

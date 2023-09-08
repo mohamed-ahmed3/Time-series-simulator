@@ -1,6 +1,6 @@
 from configuration_manager import ConfigurationManagerCreator, YamlConfigurationManager, JsonConfigurationManager
 import unittest
-from unittest.mock import patch
+
 
 
 class TestConfigurationManager(unittest.TestCase):
@@ -10,7 +10,7 @@ class TestConfigurationManager(unittest.TestCase):
     These tests check the creation of configuration manager instances based on different sources
     (YAML, JSON) and verify that an exception is raised when an unknown source is provided.
     """
-    @patch.multiple(ConfigurationManagerCreator, __abstractmethods__=set())
+
     def setUp(self) -> None:
         """
         Set up common test data.
@@ -47,6 +47,7 @@ class TestYamlConfigurationManager(unittest.TestCase):
     These tests verify the functionality of the YamlConfigurationManager class, including
     reading configuration data successfully and accessing the 'start_date' attribute.
     """
+
     def setUp(self) -> None:
         """
         Set up the test environment by creating a YamlConfigurationManager instance.
@@ -77,6 +78,7 @@ class TestJsonConfigurationManager(unittest.TestCase):
     These tests verify the functionality of the JsonConfigurationManager class, including
     reading configuration data successfully and accessing the 'start_date' attribute.
     """
+
     def setUp(self) -> None:
         """
         Set up the test environment by creating a JsonConfigurationManager instance.

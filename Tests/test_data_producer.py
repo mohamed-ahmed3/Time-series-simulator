@@ -2,7 +2,7 @@ import os.path
 import unittest
 from data_producer import DataProducerFileCreation, CsvDataProducer
 import pandas as pd
-from unittest.mock import patch, mock_open
+from unittest.mock import patch
 
 
 class TestDataProducer(unittest.TestCase):

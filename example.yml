@@ -21,7 +21,7 @@ trend_levels:
 cyclic_periods: 
 - "exist"
 - "no"
-data_types: 
+data_types:
 - "additive"
 - "multiplicative"
 percentage_outliers_options:

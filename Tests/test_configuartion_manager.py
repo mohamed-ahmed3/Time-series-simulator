@@ -2,7 +2,6 @@ from configuration_manager import ConfigurationManagerCreator, YamlConfiguration
 import unittest
 
 
-
 class TestConfigurationManager(unittest.TestCase):
     """
     Unit tests for the ConfigurationManager and its subclasses.
@@ -22,14 +21,14 @@ class TestConfigurationManager(unittest.TestCase):
         """
         Test the successful creation of a YAML configuration manager instance.
         """
-        yaml_instance = ConfigurationManagerCreator.create(self.source_yml)
+        yaml_instance = ConfigurationManagerCreator.create(self.source_yml, None)
         self.assertIsInstance(yaml_instance, YamlConfigurationManager)
 
     def test_create_json(self):
         """
         Test the successful creation of a JSON configuration manager instance.
         """
-        json_instance = ConfigurationManagerCreator.create(self.source_json)
+        json_instance = ConfigurationManagerCreator.create(self.source_json, None)
         self.assertIsInstance(json_instance, JsonConfigurationManager)
 
     def test_create_unknown(self):
@@ -52,7 +51,7 @@ class TestYamlConfigurationManager(unittest.TestCase):
         """
         Set up the test environment by creating a YamlConfigurationManager instance.
         """
-        self.source_yml = ConfigurationManagerCreator.create("example.yml")
+        self.source_yml = ConfigurationManagerCreator.create("example.yml", None)
 
     def test_read(self):
         """
@@ -83,7 +82,7 @@ class TestJsonConfigurationManager(unittest.TestCase):
         """
         Set up the test environment by creating a JsonConfigurationManager instance.
         """
-        self.source_json = ConfigurationManagerCreator.create("example1.json")
+        self.source_json = ConfigurationManagerCreator.create("example1.json", None)
 
     def test_read(self):
         """
